@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
@@ -10,8 +8,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # No host port on purpose: web reaches Postgres over the compose
+    # network (POSTGRES_HOST=db), and publishing 5432 clashes with any
+    # Postgres already installed on the machine.
 
   web:
     build: .
