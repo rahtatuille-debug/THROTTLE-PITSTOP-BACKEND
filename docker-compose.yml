@@ -11,6 +11,11 @@ services:
     # No host port on purpose: web reaches Postgres over the compose
     # network (POSTGRES_HOST=db), and publishing 5432 clashes with any
     # Postgres already installed on the machine.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   web:
     build: .
@@ -28,8 +33,10 @@ services:
       DJANGO_SETTINGS_MODULE: config.settings.dev
     ports:
       - "8000:8000"
+    # Wait until Postgres accepts connections, so migrate doesn't race it
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
