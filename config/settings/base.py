@@ -4,6 +4,7 @@ use config.settings.dev or config.settings.prod.
 """
 from pathlib import Path
 import environ
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -80,6 +81,21 @@ DATABASES = {
         "PORT": env("POSTGRES_PORT", default="5432"),
     }
 }
+
+# Managed Postgres providers (e.g. Neon) typically hand you a single
+# connection URL instead of separate host/user/password fields. If
+# DATABASE_URL is set, it takes over from the POSTGRES_* fields above -
+# this keeps local/Docker Compose dev (which uses the separate vars)
+# working unchanged while letting production point at Neon with one
+# variable. ssl_require=True because Neon (and most managed providers)
+# reject non-SSL connections outright.
+DATABASE_URL = env("DATABASE_URL", default=None)
+if DATABASE_URL:
+    DATABASES["default"] = dj_database_url.config(
+        env="DATABASE_URL",
+        conn_max_age=600,
+        ssl_require=True,
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
