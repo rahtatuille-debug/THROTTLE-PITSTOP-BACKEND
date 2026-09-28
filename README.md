@@ -1,8 +1,8 @@
 # Throttle Pitstop — Backend
 
 Django + Django REST Framework API for the Throttle Pitstop store
-(Anwar Center, Karen). Currently covers **Phase 0–2** of the build plan:
-project foundations, auth, and the product catalog.
+(Anwar Center, Karen). Currently covers **Phase 0–3** of the build plan:
+project foundations, auth, the product catalog, and guest checkout (orders).
 
 ## Stack
 - Django 5 + Django REST Framework
@@ -57,6 +57,8 @@ docker compose exec web python manage.py seed_catalog
 | GET    | `/api/categories/`         | List categories                      |
 | GET    | `/api/products/`           | List active products (paginated, filter by `?category__slug=`) |
 | GET    | `/api/products/<slug>/`    | Product detail                       |
+| POST   | `/api/orders/`             | Place an order (guest checkout, no login needed) |
+| GET    | `/api/orders/<id>/`        | Order detail for the confirmation page |
 
 ## Managing products
 
@@ -66,8 +68,9 @@ this is intentional (see the build plan's Phase 1 notes).
 
 ## What's not built yet
 
-Cart, checkout, orders, and M-Pesa integration are Phase 3–5 of the
-build plan — not in this drop. See `throttle-pitstop-build-plan.md`.
+Orders can be placed with Cash on Delivery or M-Pesa selected, but
+actual M-Pesa payment (STK push) isn't integrated yet — that's Phase 4–5.
+Staff confirm and update orders from Django admin. See `throttle-pitstop-build-plan.md`.
 
 ## Deploying
 
